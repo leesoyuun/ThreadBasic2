@@ -1,15 +1,54 @@
 package com.example.threadbasic2;
 
-import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.Bundle;
+import android.util.Log;
+
 public class MainActivity extends AppCompatActivity {
+
     Thread wr;
+    WorkerThread wt;
     boolean running = true;
-    final String TAG = "THREAD2";
+    String TAG2 = "THREAD2";
+    String TAG = "THREAD";
+
+
+    class WorkerThread extends  Thread{
+        @Override
+        public void run() {
+            int i =0;
+            for(i = 0; i<20 && running; i++){
+                try{
+                    Thread.sleep(1000);
+
+                }catch (InterruptedException e){
+
+                }
+                Log.v(TAG,"Thread time = "+i);
+            }
+        }
+    }
+
+    class WorkerRunnable implements Runnable{
+
+
+        @Override
+        public void run() {
+            int i =0;
+            for(i = 0; i<20 && running; i++){
+                try{
+                    Thread.sleep(1000);
+
+                }catch (InterruptedException e){
+
+                }
+                Log.v(TAG2,"Runnable time="+i);
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,40 +59,26 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
         running = true;
-        wr = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int i = 0;
-                for(i = 0; i< 20 && running; i++) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                    }
-                    Log.v("TAG", "Runnable time" + i);
-                }
-            }
-        });
+        wt= new WorkerThread();
+        wr = new Thread(new WorkerRunnable());
+
+        wt.start();
         wr.start();
-        Log.v(TAG, "Now I am in onStart");
+
+        Log.v(TAG2,"Now I am in onStart");
     }
+
     @Override
-    public void onStop() {
+    protected void onStop() {
         super.onStop();
         running = false;
-        Log.v(TAG, "Now I am in onStop" );
+        Log.v(TAG2,"Now I am in onStop");
     }
 
     @Override
-    public void onPause() {
+    protected void onPause() {
         super.onPause();
-        Log.v(TAG, "Now I am in onPause" );
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.v(TAG, "Now I am in onResume" );
+        Log.v(TAG2,"Now I am in onPause");
     }
 }
